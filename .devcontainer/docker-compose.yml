@@ -1,0 +1,10 @@
+services:
+  python-dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    container_name: python-dev
+    volumes:
+      - ../.:/workspace
+    ports:
+      - "8000:8000"
