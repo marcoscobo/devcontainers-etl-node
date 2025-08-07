@@ -1,0 +1,21 @@
+{
+  "name": "DevContainer Python ETL",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "python-dev",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "vivaxy.vscode-conventional-commits", // Helps with conventional commits
+        "ms-python.python", // Full support for Python
+        "ms-python.vscode-pylance", // Fast analysis engine for Python
+        "cweijan.vscode-database-client2", // Database Client extension
+        "cweijan.dbclient-jdbc" // JDBC addon
+      ]
+    }
+  }
+}
