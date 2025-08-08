@@ -67,12 +67,19 @@ def build_event(product_id: int, unit_price: float, customer_id: int) -> dict:
 def main():
     engine = create_engine(PG_URL, echo=False, future=True)
     # Wait for Postgres to be accessible
-    with engine.begin() as conn:
-        conn.execute(text("SELECT 1"))
+    retry_seconds = 5
+    while True:
+        try:
+            with engine.begin() as conn:
+                conn.execute(text("SELECT 1 FROM products"))
+            break
+        except Exception as e:
+            print(f"❌ Kafka: Postgres is empty. Retrying in {retry_seconds} seconds")
+            time.sleep(retry_seconds)
     # Initial cache
     product_price, customer_ids = load_catalog(engine)
     if not product_price or not customer_ids:
-        raise RuntimeError("Postgres is empty: products and customers are required to generate sales.")
+        raise RuntimeError("❌ Kafka: Postgres is empty, products and customers are required to generate sales.")
     # Create kafka topic and producer
     ensure_topic(KAFKA_BOOTSTRAP, KAFKA_TOPIC)
     producer = KafkaProducer(
@@ -106,7 +113,7 @@ def main():
                 evt = build_event(pid, price, cid)
                 producer.send(KAFKA_TOPIC, key=evt["event_id"], value=evt)
             producer.flush()
-            print(f"➕ New events: {n_events}")
+            print(f"➕ Kafka: New events: {n_events}")
             i += 1
             time.sleep(INTERVAL_SECONDS)
     except KeyboardInterrupt:
