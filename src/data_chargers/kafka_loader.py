@@ -14,7 +14,7 @@ INTERVAL_SECONDS = int(os.getenv("INTERVAL_SECONDS", "10"))
 MAGNITUDE_ORDER = int(os.getenv("MAGNITUDE_ORDER", "10"))
 REFRESH_CACHE_CYCLES = int(os.getenv("REFRESH_EVERY_CYCLES", "2"))
 
-# -------- Util --------
+# -------- Helpers --------
 def _json_serializer(v: dict) -> bytes:
     """Serializes a dictionary to a JSON-encoded UTF-8 byte string."""
     return json.dumps(v, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
@@ -32,7 +32,6 @@ def ensure_topic(bootstrap: str, topic: str, partitions: int = 1, rf: int = 1):
     except TopicAlreadyExistsError:
         print(f"ℹ️ Kafka: topic '{topic}' already exists")
     except Exception as e:
-        # Do not abort: if the cluster does not allow topic creation, continue (autocreation or preexisting)
         print(f"⚠️ Could not create/verify topic '{topic}': {e}")
 
 def load_catalog(engine: Engine):
