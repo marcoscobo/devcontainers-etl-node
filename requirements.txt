@@ -2,5 +2,5 @@ numpy
 pandas
 sqlalchemy
 psycopg2
-boto3
 kafka-python
+boto3
