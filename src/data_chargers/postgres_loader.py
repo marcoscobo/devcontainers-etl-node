@@ -94,7 +94,7 @@ def main():
     # Create tables needed
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine, expire_on_commit=False)
-    print("✅ Tables created/updated. Starting periodic inserts…")
+    print("✅ Postgres: Tables created/updated. Starting periodic inserts…")
     # Insert elements periodically
     try:
         with Session() as sess:
@@ -107,17 +107,17 @@ def main():
                     n_new = random.randint(1, MAGNITUDE_ORDER // 2)
                     for _ in range(n_new):
                         sess.add(Product(**_rand_product()))
-                    print(f"➕ New products: {n_new}")
+                    print(f"➕ Postgres: New products: {n_new}")
                 # 2) Insert customers continuously
                 n_cust = random.randint(1, MAGNITUDE_ORDER)
                 for _ in range(n_cust):
                     sess.add(Customer(**_rand_customer()))
-                print(f"➕ New customers: {n_cust}")
+                print(f"➕ Postgres: New customers: {n_cust}")
                 sess.commit()
             i += 1
             time.sleep(INTERVAL_SECONDS)
     except KeyboardInterrupt:
-        print("\n🛑 Interrupted by user. Exiting…")
+        print("\n🛑 Postgres: Interrupted by user. Exiting...")
 
 if __name__ == "__main__":
     main()

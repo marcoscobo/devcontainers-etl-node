@@ -32,7 +32,7 @@ def ensure_topic(bootstrap: str, topic: str, partitions: int = 1, rf: int = 1):
     except TopicAlreadyExistsError:
         print(f"ℹ️ Kafka: topic '{topic}' already exists")
     except Exception as e:
-        print(f"⚠️ Could not create/verify topic '{topic}': {e}")
+        print(f"⚠️ Kafka: Could not create/verify topic '{topic}': {e}")
 
 def load_catalog(engine: Engine):
     """Loads products (id, price) and customers (id) from Postgres."""
@@ -82,7 +82,7 @@ def main():
         linger_ms=50,
         acks="all",
     )
-    print(f"✅ Producer started. Publishing to '{KAFKA_TOPIC}'...")
+    print(f"✅ Kafka: Producer started. Publishing to '{KAFKA_TOPIC}'...")
     # Insert events periodically
     try:
         i = 0
@@ -94,7 +94,7 @@ def main():
                     product_price = pp_new
                 if cust_new:
                     customer_ids = cust_new
-                print(f"ℹ️ Cache refreshed")
+                print(f"ℹ️ Kafka: Cache refreshed")
             # Create and publish random events
             n_events = random.randint(1, MAGNITUDE_ORDER)
             product_ids = list(product_price.keys())
@@ -110,7 +110,7 @@ def main():
             i += 1
             time.sleep(INTERVAL_SECONDS)
     except KeyboardInterrupt:
-        print("\n🛑 Interrupted by user. Closing producer...")
+        print("\n🛑 Kafka: Interrupted by user. Exiting...")
     finally:
         producer.flush()
         producer.close()

@@ -40,7 +40,7 @@ def ensure_bucket(s3):
         code = e.response.get("Error", {}).get("Code")
         if code in ("404", "NoSuchBucket"):
             s3.create_bucket(Bucket=S3_BUCKET)
-            print(f"🪣 Created bucket: {S3_BUCKET}")
+            print(f"✅ Minio: Created bucket: {S3_BUCKET}")
         else:
             raise e
 
@@ -52,7 +52,6 @@ def upload_file(s3, local_path: str, object_name: str):
         object_name,
         ExtraArgs={"ContentType": "text/csv"},
     )
-    print(f"📤 Uploaded → s3://{S3_BUCKET}/{object_name}")
 
 def get_product_ids_from_pg(limit: Optional[int] = None) -> List[int]:
     """
@@ -67,12 +66,12 @@ def get_product_ids_from_pg(limit: Optional[int] = None) -> List[int]:
             rows = conn.execute(text(sql)).all()
         ids = [int(r.id) for r in rows]
         if ids:
-            print(f"✅ Postgres: loaded {len(ids)} product_id(s).")
+            print(f"✅ Minio: Loaded {len(ids)} product_id(s) from Postgres.")
             return ids
     except SQLAlchemyError as e:
-        print(f"⚠️ Could not read products from Postgres: {e}")
+        print(f"⚠️ Minio: Could not read products from Postgres: {e}")
     n = 50
-    print(f"ℹ️ Falling back to synthetic product IDs (1..{n}).")
+    print(f"ℹ️ Minio: Falling back to synthetic product IDs (1..{n}).")
     return list(range(1, n + 1))
 
 def write_inventory_csv(file_path: str, d: date, warehouse: str, product_ids: List[int]):
@@ -99,16 +98,12 @@ def main():
     ensure_bucket(s3)
     # Load product IDs from ERP (Postgres) for consistency in warehouse snapshots
     product_ids = get_product_ids_from_pg()
-    print(
-        f"🏁 Starting periodic generation: every {INTERVAL_SECONDS}s, "
-        f"one file per warehouse, step {STEP_DAYS} day(s). Start date: {start_date}."
-    )
+    print(f"🏁 Minio: Starting generation: every {INTERVAL_SECONDS}s, one file per warehouse, step {STEP_DAYS} day(s). Start date: {start_date}.")
     # Insert data periodically
     try:
         cycle = 0
         while True:
             cycle += 1
-            uploaded = 0
             for wh in warehouses:
                 d = next_date_per_wh[wh]
                 ymd = d.strftime("%Y%m%d")
@@ -124,11 +119,10 @@ def main():
                     upload_file(s3, local_path, object_name)
                 # Advance this warehouse's simulated date pointer
                 next_date_per_wh[wh] = d + timedelta(days=STEP_DAYS)
-                uploaded += 1
-            print(f"→ Cycle {cycle}: uploaded {uploaded} file(s) ({len(warehouses)} warehouses).")
+            print(f"➕ Minio: New files: {warehouses}")
             time.sleep(INTERVAL_SECONDS)
     except KeyboardInterrupt:
-        print("\n🛑 Interrupted by user. Exiting…")
+        print("\n🛑 Minio: Interrupted by user. Exiting...")
 
 if __name__ == "__main__":
     main()
