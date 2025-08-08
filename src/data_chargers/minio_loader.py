@@ -119,7 +119,7 @@ def main():
                     upload_file(s3, local_path, object_name)
                 # Advance this warehouse's simulated date pointer
                 next_date_per_wh[wh] = d + timedelta(days=STEP_DAYS)
-            print(f"➕ Minio: New files: {warehouses}")
+            print(f"➕ Minio: New files: {len(warehouses)}")
             time.sleep(INTERVAL_SECONDS)
     except KeyboardInterrupt:
         print("\n🛑 Minio: Interrupted by user. Exiting...")
