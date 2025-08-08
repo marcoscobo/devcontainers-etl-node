@@ -1,4 +1,3 @@
-# erp_loader.py
 import os, random, string, time
 from sqlalchemy import create_engine, String, Integer, Numeric, DateTime, func, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
@@ -89,38 +88,34 @@ def ensure_min_products(sess, min_count: int = 10):
 # ---------- Main ----------
 def main():
     engine = create_engine(PG_URL, echo=False, future=True)
-    # Optional: wait for Postgres to be accessible
+    # Wait for Postgres to be accessible
     with engine.begin() as conn:
         conn.execute(text("SELECT 1"))
-
+    # Create tables needed
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine, expire_on_commit=False)
-
     print("✅ Tables created/updated. Starting periodic inserts…")
+    # Insert elements periodically
     try:
         with Session() as sess:
             ensure_min_products(sess, min_count=25)
-
         i = 0
         while True:
             with Session() as sess:
-                # 1) Insert 1..N random products (every 5 cycles)
+                # 1) Insert random products every 5 cycles
                 if i % 5 == 0:
                     n_new = random.randint(1, MAGNITUDE_ORDER // 2)
                     for _ in range(n_new):
                         sess.add(Product(**_rand_product()))
                     print(f"➕ New products: {n_new}")
-
                 # 2) Insert customers continuously
                 n_cust = random.randint(1, MAGNITUDE_ORDER)
                 for _ in range(n_cust):
                     sess.add(Customer(**_rand_customer()))
                 print(f"➕ New customers: {n_cust}")
-
                 sess.commit()
             i += 1
             time.sleep(INTERVAL_SECONDS)
-
     except KeyboardInterrupt:
         print("\n🛑 Interrupted by user. Exiting…")
 
