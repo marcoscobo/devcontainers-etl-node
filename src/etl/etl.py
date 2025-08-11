@@ -1,7 +1,11 @@
 # etl.py
-import pandas as pd
+import os, pandas as pd
 from typing import Dict
 from extractors import read_pg_table, read_kafka_topic, read_minio_inventory_df
+from loaders import load_clickhouse_tables
+
+# ---------- Config ----------
+INSERT = os.getenv("INSERT", "True").lower() in ("true", "1", "yes")
 
 # -------- Helpers --------
 def extract_dataframes() -> Dict[str, pd.DataFrame]:
@@ -50,11 +54,18 @@ def transform_for_clickhouse():
     }
 
 def main():
+    print("⌛ Querying data from sources...")
     tables = transform_for_clickhouse()
+    if INSERT:
+        print("🔄 Inserting data into ClickHouse...")
+        load_clickhouse_tables(tables)
+        print("✅ Data inserted into ClickHouse.")
+    else:
+        print("🔄 Transforming data for ClickHouse, but not inserting (INSERT=False).")
     for name, df in tables.items():
-        print(f"\n=== {name} ({df.shape[0]} rows) ===")
+        print(f"\n🟢 {name} ({df.shape[0]} rows) ===")
         print(df.head(5).to_string(index=False))
-        print("...")
+        
 
 if __name__ == "__main__":
     main()

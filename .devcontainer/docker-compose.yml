@@ -45,7 +45,7 @@ services:
     #   - kafka-data:/var/lib/kafka/data
 
   minio:
-    image: minio/minio
+    image: minio/minio:latest
     container_name: minio
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -58,8 +58,12 @@ services:
     #   - minio-data:/data
 
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse:latest
     container_name: clickhouse
+    environment:
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_DB: commerce
     ports:
       - "8123:8123"
       - "9009:9009"
