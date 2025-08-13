@@ -1,0 +1,7 @@
+numpy
+pandas
+sqlalchemy
+psycopg2
+kafka-python
+boto3
+clickhouse-connect
