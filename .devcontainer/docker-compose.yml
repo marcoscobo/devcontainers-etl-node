@@ -3,7 +3,7 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-    container_name: python-dev
+    container_name: etl-python-dev
     volumes:
       - ../.:/workspace
     ports:
@@ -16,7 +16,7 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: postgres
+    container_name: etl-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -28,7 +28,7 @@ services:
 
   kafka:
     image: apache/kafka:latest
-    container_name: kafka
+    container_name: etl-kafka
     environment:
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_NODE_ID: 1
@@ -46,7 +46,7 @@ services:
 
   minio:
     image: minio/minio:latest
-    container_name: minio
+    container_name: etl-minio
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -59,7 +59,7 @@ services:
 
   clickhouse:
     image: clickhouse:latest
-    container_name: clickhouse
+    container_name: etl-clickhouse
     environment:
       CLICKHOUSE_USER: clickhouse
       CLICKHOUSE_PASSWORD: clickhouse
