@@ -7,7 +7,7 @@ services:
     volumes:
       - ../.:/workspace
     ports:
-      - "8000:8000"
+      - "8080:8000"
     depends_on:
       - postgres
       - kafka
@@ -65,8 +65,8 @@ services:
       CLICKHOUSE_PASSWORD: clickhouse
       CLICKHOUSE_DB: commerce
     ports:
-      - "8123:8123"
-      - "9009:9000"
+      - "8120:8123"
+      - "9090:9000"
     # volumes:
     #   - clickhouse-data:/var/lib/clickhouse
 
