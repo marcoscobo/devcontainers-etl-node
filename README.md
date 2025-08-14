@@ -10,6 +10,10 @@ The goal of this project is to provide a preconfigured development environment t
 - **Data Transformation**: Process and clean data to make it usable for downstream applications.
 - **Data Loading**: Load processed data into target systems for further use.
 
+The diagram below shows the interaction between the project components:
+
+<img src="media/diagram.png" alt="Diagram" width="50%">
+
 ## Key Features
 
 - **DevContainers**: Development container configuration to ensure a consistent environment.
